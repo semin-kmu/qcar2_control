@@ -15,7 +15,7 @@ setup(
     maintainer="jeon_semin",
     maintainer_email="eiffeltower1206@kookmin.ac.kr",
     description="ACC control nodes",
-    license="TODO: License declaration",
+    license="MIT",
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
