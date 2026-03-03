@@ -1,11 +1,11 @@
 # qcar2_control
 
 ROS 2 path-following package for QCar2.  
-The current codebase includes Bezier/PH path publishers, VFG guidance, PID or H-infinity steering control, and a runtime dashboard.
+The current codebase includes Bezier/PH path publishers, VFG guidance, PID steering control, and a runtime dashboard.
 
 ## 1. Available Launch Profiles
 
-There are 4 launch files:
+There are 2 launch files:
 
 1. `bezier_vfg_control.launch.py`
 - `bezier_path_publisher` + `vfg_guidance_node` + `pid_lateral_controller_node` + `dashboard`
@@ -13,46 +13,30 @@ There are 4 launch files:
 2. `ph_vfg_control.launch.py`
 - `ph_path_publisher` + `vfg_guidance_ph_node` + `pid_lateral_controller_ph_node` + `dashboard`
 
-3. `ph_vfg_h_infinite.launch.py`
-- `ph_path_publisher` + `vfg_guidance_ph_node` + `h_inf_controller_ph_node` + `dashboard`
-
-4. `ph_scalecar_hinf_control.launch.py`
-- `ph_path_publisher` + `scalecar_hinf_path_follower` + `dashboard`
-- This profile does not use the C++ VFG/H-inf nodes. Guidance and control are handled inside Python (`scalecar_vfg`).
-
 ## 2. Package Layout (Core Files)
 
 ```text
 qcar2_control/
 ├── launch/
 │   ├── bezier_vfg_control.launch.py
-│   ├── ph_vfg_control.launch.py
-│   ├── ph_vfg_h_infinite.launch.py
-│   └── ph_scalecar_hinf_control.launch.py
+│   └── ph_vfg_control.launch.py
 ├── src/
 │   ├── vfg_guidance.cpp
 │   ├── pid_controller.cpp
 │   ├── vfg_guidance_ph.cpp
 │   ├── pid_controller_ph.cpp
-│   ├── h_inf_controller_ph.cpp
-│   ├── ph_runtime.cpp
-│   ├── lpv_hinf_runtime.cpp
-│   └── lpv_hinf_v3_data.cpp
+│   └── ph_runtime.cpp
 ├── include/qcar2_control/
 │   ├── bezier.hpp
-│   ├── ph_runtime.hpp
-│   ├── lpv_hinf_runtime.hpp
-│   └── lpv_hinf_v3_data.hpp
+│   └── ph_runtime.hpp
 ├── qcar2_control/
 │   ├── bezier_path_publisher.py
 │   ├── ph_path_publisher.py
-│   ├── scalecar_hinf_path_follower.py
 │   ├── dashboard.py
 │   └── scalecar_vfg/...
 ├── scripts/
 │   ├── bezier_path_publisher
 │   ├── ph_path_publisher
-│   ├── scalecar_hinf_path_follower
 │   └── dashboard
 ├── CMakeLists.txt
 ├── package.xml
@@ -92,23 +76,14 @@ Bezier + C++ VFG + PID:
   -> /qcar2_motor_speed_cmd
 ```
 
-PH + C++ VFG + PID/H-inf:
+PH + C++ VFG + PID:
 
 ```text
 /planning/local_path_ph (PhQuinticPath)
   -> vfg_guidance_ph_node
   -> /vfg/lateral_guidance
-  -> pid_lateral_controller_ph_node or h_inf_controller_ph_node
+  -> pid_lateral_controller_ph_node
   -> /qcar2_motor_speed_cmd
-```
-
-PH + Python scalecar follower:
-
-```text
-/planning/local_path_path (Path)
-  -> scalecar_hinf_path_follower
-  -> /qcar2_motor_speed_cmd
-  -> (optional) /vfg/lateral_guidance
 ```
 
 ## 4. Key Parameters by Node
@@ -144,15 +119,6 @@ PH-only (`vfg_guidance_ph_node`) extras:
 - End stop logic: `stop_on_penultimate`, `stop_distance_m`, `stop_sample_count`
 - Fixed-speed test input: `throttle_test_value_mps`
 
-`h_inf_controller_ph_node`:
-- Same speed/stop/smoothing parameter groups as PID-PH node
-- H-inf scheduling option: `rho_use_lookahead_curvature`
-
-`scalecar_hinf_path_follower`:
-- Topics/frames: `path_topic`, `cmd_topic`, `guidance_topic`, `path_frame`, `base_frame`, `tf_timeout_sec`
-- Control loop/constants: `dt_ctrl`, `v_const`, `k_e`, `steer_limit_rad`, `end_stop_margin_m`
-- Guidance message output: `publish_guidance`
-
 `dashboard`:
 - Input/display: `path_topic`, `frame_id`, `base_frame`, `update_rate_hz`, `plot_xaxis`, `display_rotation_deg`
 - History length: `max_points`
@@ -170,8 +136,6 @@ source install/setup.bash
 ```bash
 ros2 launch qcar2_control bezier_vfg_control.launch.py
 ros2 launch qcar2_control ph_vfg_control.launch.py
-ros2 launch qcar2_control ph_vfg_h_infinite.launch.py
-ros2 launch qcar2_control ph_scalecar_hinf_control.launch.py
 ```
 
 Individual run examples:
@@ -183,8 +147,6 @@ ros2 run qcar2_control vfg_guidance_node
 ros2 run qcar2_control vfg_guidance_ph_node
 ros2 run qcar2_control pid_lateral_controller_node
 ros2 run qcar2_control pid_lateral_controller_ph_node
-ros2 run qcar2_control h_inf_controller_ph_node
-ros2 run qcar2_control scalecar_hinf_path_follower
 ros2 run qcar2_control dashboard
 ```
 
@@ -194,8 +156,7 @@ Based on `package.xml`:
 
 - ROS: `rclcpp`, `rclpy`, `tf2`, `tf2_ros`, `tf2_geometry_msgs`, `geometry_msgs`, `nav_msgs`, `visualization_msgs`, `std_msgs`
 - Message packages: `qcar2_msgs`, `qcar2_interfaces`
-- Numeric library: `eigen` (`Eigen3`)
-- Python: `python3-matplotlib`, `python3-numpy`, `python3-scipy`
+- Python: `python3-matplotlib`, `python3-numpy`
 
 ## 7. Dashboard Input Checklist
 

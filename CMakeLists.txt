@@ -17,7 +17,6 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(qcar2_msgs REQUIRED)
 find_package(qcar2_interfaces REQUIRED)
-find_package(Eigen3 REQUIRED)
 
 ament_python_install_package(${PROJECT_NAME})
 
@@ -25,7 +24,6 @@ install(PROGRAMS
   scripts/bezier_path_publisher
   scripts/ph_path_publisher
   scripts/dashboard
-  scripts/scalecar_hinf_path_follower
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -64,17 +62,6 @@ target_include_directories(ph_runtime PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-add_library(lpv_hinf_runtime STATIC
-  src/lpv_hinf_runtime.cpp
-  src/lpv_hinf_v3_data.cpp
-)
-target_include_directories(lpv_hinf_runtime PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-)
-target_link_libraries(lpv_hinf_runtime
-  Eigen3::Eigen
-)
-
 add_executable(vfg_guidance_ph_node src/vfg_guidance_ph.cpp)
 ament_target_dependencies(vfg_guidance_ph_node
   rclcpp
@@ -106,27 +93,11 @@ target_link_libraries(pid_lateral_controller_ph_node
   ph_runtime
 )
 
-add_executable(h_inf_controller_ph_node src/h_inf_controller_ph.cpp)
-ament_target_dependencies(h_inf_controller_ph_node
-  rclcpp
-  qcar2_msgs
-  qcar2_interfaces
-)
-target_include_directories(h_inf_controller_ph_node PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-)
-target_link_libraries(h_inf_controller_ph_node
-  ph_runtime
-  lpv_hinf_runtime
-  Eigen3::Eigen
-)
-
 install(TARGETS
   vfg_guidance_node
   pid_lateral_controller_node
   vfg_guidance_ph_node
   pid_lateral_controller_ph_node
-  h_inf_controller_ph_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

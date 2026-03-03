@@ -11,9 +11,6 @@ setup(
         ("share/" + package_name, ["package.xml"]),
     ],
     install_requires=["setuptools"],
-    package_data={
-        "qcar2_control.scalecar_vfg.data.controllers": ["*.json"],
-    },
     zip_safe=True,
     maintainer="jeon_semin",
     maintainer_email="eiffeltower1206@kookmin.ac.kr",
@@ -25,7 +22,6 @@ setup(
             "bezier_path_publisher = qcar2_control.bezier_path_publisher:main",
             "ph_path_publisher = qcar2_control.ph_path_publisher:main",
             "dashboard = qcar2_control.dashboard:main",
-            "scalecar_hinf_path_follower = qcar2_control.scalecar_hinf_path_follower:main",
         ],
     },
 )

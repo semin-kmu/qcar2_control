@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Vendored scalecar VFG/LPV-Hinf modules for qcar2_control."""
+"""Vendored scalecar VFG utility modules for qcar2_control."""
 
-from .controllers.lpv_hinf import LPVHinfController
+from .controllers.pid_ff import PIDFeedforward
 from .guidance.vfg import VectorFieldGuidance
 from .paths.path_base import PathBase
 
-__all__ = ["LPVHinfController", "VectorFieldGuidance", "PathBase"]
+__all__ = ["PIDFeedforward", "VectorFieldGuidance", "PathBase"]

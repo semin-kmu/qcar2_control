@@ -7,7 +7,6 @@ Description: Re-exports controller classes.
 """
 
 from .base import ControllerBase
-from .lpv_hinf import LPVHinfController
 from .pid_ff import PIDFeedforward
 
-__all__ = ["ControllerBase", "LPVHinfController", "PIDFeedforward"]
+__all__ = ["ControllerBase", "PIDFeedforward"]
